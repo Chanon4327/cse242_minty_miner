@@ -1,0 +1,11 @@
+need some test files in plain text containing (create for testing)
+
+data structure need to hold
+address: string
+balance: int
+the SHA-256 hash of account and balance, concatenated
+
+1. read plain text file and store them into any chosen data structure.
+2. each account need to be hashed using SHA-256 
+3. must be able to traverse the data structure to individual account
+4. calculate the merkle root
