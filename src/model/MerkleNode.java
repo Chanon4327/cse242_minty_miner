@@ -18,7 +18,7 @@ public class MerkleNode {
     public MerkleNode(String address, int balance) {
         this.address = address;
         this.balance = balance;
-        this.hash = toHash(address, balance);
+        this.hash = hashNode(address, balance);
     }
 
     public String getAddress() {
