@@ -1,5 +1,9 @@
 package model;
 
+import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+
 public class MerkleNode {
     private final String address;
     private final int balance;
@@ -14,7 +18,7 @@ public class MerkleNode {
     public MerkleNode(String address, int balance) {
         this.address = address;
         this.balance = balance;
-        this.hash = toHash(address, balance);
+        this.hash = hashNode(address, balance);
     }
 
     public String getAddress() {
@@ -29,8 +33,22 @@ public class MerkleNode {
         return hash;
     }
 
-    public static String toHash(String address, int balance) {
-        // todo: create sha-256 hash, of address and balance concatenated
+    public static String hashNode(String addr, int bal){
+        String strBal = Integer.toString(bal);
+        String res = addr.concat(strBal);
+
+        try{
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+            BigInteger number = new BigInteger(1, md.digest(res.getBytes(StandardCharsets.UTF_8)));
+            StringBuilder hexString = new StringBuilder(number.toString(16));
+            while (hexString.length() < 64){
+                hexString.insert(0, '0');
+            }
+            return hexString.toString();
+
+        } catch (Exception e){
+            System.out.println("Error hashing.");
+        }
         return null;
     }
 
