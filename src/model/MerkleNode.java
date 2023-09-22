@@ -35,16 +35,36 @@ public class MerkleNode {
     }
 
     public static MerkleNode fromString(String serialized) {
-        // todo: create merkle node from serialized string
-        return null;
+
+        String[] split = serialized.split(" ");
+
+        if (split.length != 2) {
+            throw new RuntimeException("Invalid serialized string length (" + split.length + ") \n" + serialized);
+        }
+
+        if (split[0].length() != 40) {
+            throw new RuntimeException("Invalid address length " + split[0].length() + " != 40,\n " + split[0]);
+        }
+
+
+        Number number;
+        try {
+            number = Integer.parseInt(split[1].strip());
+        } catch (NumberFormatException e) {
+            throw new RuntimeException("Invalid balance " + split[1]);
+        }
+
+        if (number.intValue() < 0) {
+            throw new RuntimeException("Invalid balance " + number.intValue() + " < 0,\n " + split[1]);
+        }
+
+
+        return new MerkleNode(split[0], number.intValue());
+
     }
 
     @Override
     public String toString() {
-        return "MerkleNode{" +
-                "address='" + address + '\'' +
-                ", balance=" + balance +
-                ", hash='" + hash + '\'' +
-                '}';
+        return address + " " + balance;
     }
 }
