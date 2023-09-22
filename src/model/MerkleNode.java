@@ -41,8 +41,7 @@ public class MerkleNode {
             MessageDigest md = MessageDigest.getInstance("SHA-256");
             BigInteger number = new BigInteger(1, md.digest(res.getBytes(StandardCharsets.UTF_8)));
             StringBuilder hexString = new StringBuilder(number.toString(16));
-            while (hexString.length() < 64)
-            {
+            while (hexString.length() < 64){
                 hexString.insert(0, '0');
             }
             return hexString.toString();
