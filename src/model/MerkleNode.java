@@ -11,6 +11,12 @@ public class MerkleNode {
         this.hash = hash;
     }
 
+    public MerkleNode(String address, int balance) {
+        this.address = address;
+        this.balance = balance;
+        this.hash = toHash(address, balance);
+    }
+
     public String getAddress() {
         return address;
     }
@@ -21,5 +27,10 @@ public class MerkleNode {
 
     public String getHash() {
         return hash;
+    }
+
+    public static String toHash(String address, int balance) {
+        // todo: create sha-256 hash, of address and balance concatenated
+        return null;
     }
 }
