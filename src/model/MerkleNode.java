@@ -33,4 +33,18 @@ public class MerkleNode {
         // todo: create sha-256 hash, of address and balance concatenated
         return null;
     }
+
+    public static MerkleNode fromString(String serialized) {
+        // todo: create merkle node from serialized string
+        return null;
+    }
+
+    @Override
+    public String toString() {
+        return "MerkleNode{" +
+                "address='" + address + '\'' +
+                ", balance=" + balance +
+                ", hash='" + hash + '\'' +
+                '}';
+    }
 }
