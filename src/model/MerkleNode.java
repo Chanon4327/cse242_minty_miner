@@ -57,11 +57,13 @@ public class MerkleNode {
         String[] split = serialized.split(" ");
 
         if (split.length != 2) {
-            throw new RuntimeException("Invalid serialized string length (" + split.length + ") \n" + serialized);
+            System.err.println("SKIPPING -- \n Invalid serialized string length (" + split.length + ") \n" + serialized + "\n--");
+            return null;
         }
 
         if (split[0].length() != 40) {
-            throw new RuntimeException("Invalid address length " + split[0].length() + " != 40,\n " + split[0]);
+            System.err.println("SKIPPING -- \n Invalid address length " + split[0].length() + " != 40,\n " + split[0] + "\n--");
+            return null;
         }
 
 
@@ -69,11 +71,13 @@ public class MerkleNode {
         try {
             number = Integer.parseInt(split[1].strip());
         } catch (NumberFormatException e) {
-            throw new RuntimeException("Invalid balance " + split[1]);
+            System.err.println("SKIPPING -- \n Invalid balance " + split[1] + "\n--");
+            return null;
         }
 
         if (number.intValue() < 0) {
-            throw new RuntimeException("Invalid balance " + number.intValue() + " < 0,\n " + split[1]);
+            System.err.println("SKIPPING -- \n Invalid balance " + number.intValue() + " < 0,\n " + split[1] + "\n--");
+            return null;
         }
 
 

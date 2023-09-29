@@ -4,28 +4,30 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 public class MerkleTree {
     private final ArrayList<MerkleNode> tree = new ArrayList<MerkleNode>();
 
-    public MerkleTree() {
-        merkleTree(tree);
+    private MerkleTree(ArrayList<String> lines) {
+
+        // todo: discord null vlaues
+        List<MerkleNode> tempNodes = lines.stream().map(MerkleNode::fromString).toList();
+
+
+        merkleTree(tempNodes);
+        System.out.println(tree.get(0));
     }
 
-    public static void calculateRoot(ArrayList<String> lines, MerkleTree tree) {
-        // todo:calculate root and tree
-        System.out.println(tree);
-    }
-
-    private ArrayList<MerkleNode> merkleTree(ArrayList<MerkleNode> hashList) {
-
+    private List<MerkleNode> merkleTree(List<MerkleNode> hashList) {
+        // todo: broken! - we don't do whats needed with parent hash list?
         // if the root is found, return it
         if (hashList.size() == 1) {
             return hashList;
         }
 
-        ArrayList<String> parentHashList = new ArrayList<String>();
-        for (int i = 0; i < hashList.size(); i+=2) {
+        List<String> parentHashList = new ArrayList<String>();
+        for (int i = 0; i < hashList.size(); i += 2) {
 
             // if only one child just use the child's hash
             if (hashList.size() % 2 == 1) {
@@ -35,7 +37,7 @@ public class MerkleTree {
             }
 
             // otherwise concat hash both and concat them
-            String stringHash = hashList.get(i).getHash().concat(hashList.get(i+1).getHash());
+            String stringHash = hashList.get(i).getHash().concat(hashList.get(i + 1).getHash());
             parentHashList.add(stringHash);
             MerkleNode left = new MerkleNode(stringHash, i);
             tree.add(i, left);
@@ -64,11 +66,7 @@ public class MerkleTree {
             throw new RuntimeException("Error reading file: " + filename, e);
         }
 
-        MerkleTree tree = new MerkleTree();
-
-        calculateRoot(lines, tree);
-
-        return tree;
+        return new MerkleTree(lines);
 
     }
 }
