@@ -1,0 +1,1 @@
+mvn -f Minty_miners_cse242/pom.xml package

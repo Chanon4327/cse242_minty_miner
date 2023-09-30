@@ -18,7 +18,14 @@ public class MerkleTree {
 
         tree = calculateMerkle(tempNodes);
 
-        System.out.println(tree.get(0).getHash());
+    }
+
+    public String getRootHash() {
+        return tree.get(0).getHash();
+    }
+
+    public List<MerkleNode> getTree() {
+        return tree;
     }
 
     private List<MerkleNode> calculateMerkle(List<MerkleNode> tmp) {
@@ -26,12 +33,9 @@ public class MerkleTree {
             return tmp;
         }
 
-        System.out.println(tmp.size());
 
         List<MerkleNode> merklemerkle = new ArrayList<MerkleNode>();
         for (int i = 0; i < tmp.size()-1; i += 2) {
-            System.out.println(i);
-            System.out.println(i + 1);
             // otherwise concat hash both and concat them
             String stringHash = MerkleNode.hash(tmp.get(i).getHash().concat(tmp.get(i + 1).getHash()));
             merklemerkle.add(new MerkleNode(null, -1, stringHash));
@@ -53,19 +57,18 @@ public class MerkleTree {
 
         ArrayList<String> lines = new ArrayList<String>();
 
-        File f = new File(filename);
 
-        try (BufferedReader reader = new BufferedReader(new FileReader(f))) {
+        try (BufferedReader bufferedReader = new BufferedReader(new FileReader(filename))) {
 
-            String line = reader.readLine();
+            String line;
 
-            while (line != null) {
+            // Read and print from the file line by line
+            while ((line = bufferedReader.readLine()) != null) {
                 lines.add(line);
-                line = reader.readLine();
             }
 
         } catch (IOException e) {
-            throw new RuntimeException("Error reading file: " + f.getAbsolutePath(), e);
+            System.err.println("Error reading the file: " + e.getMessage());
         }
 
         return new MerkleTree(lines);
