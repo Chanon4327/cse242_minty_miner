@@ -1,12 +1,5 @@
 package edu.lehigh.minty.miners.model;
 
-
-// todo: Please set your target such that the probability of success is 50%
-// todo: nonce concatenated with the root hash of the Merkle tree is hashed by SHA-256 to a value less than or equal to the specified target
-
-// todo: first input file was X.txt, the output file must be named X.block.out and contains the list of blocks
-//starting with the last block in the specified print format and showing the complete address/balance list.
-
 import java.util.Arrays;
 import java.util.Map;
 
@@ -19,7 +12,69 @@ public class Block {
         this.header = header;
         this.merkleTree = merkleTree;
 
+        // Create a TargetSetter for target success rate
+        TargetSetter targetSetter = new TargetSetter();
+    
+        // Get the target threshold for 50% success rate
+        header.setTarget(targetSetter.getTargetThreshold().toByteArray());
+    
+        // Continue with mining using target
+        mineBlock(targetSetter);
+
         printBlock();
+    }
+
+    private void saveBlockDataToFile(String inputFileName) {
+        // Derive the output file name from the input file name
+        String outputFileName = inputFileName.replace(".txt", ".block.out");
+
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(outputFileName, true))) {
+            // Write the block information to the output file
+            writer.write("BEGIN BLOCK");
+            writer.newLine();
+            writer.write("BEGIN HEADER");
+            // Write header information
+            writer.write("Previous Header Hash: " + header.getPreviousHeaderHash());
+            writer.newLine();
+            writer.write("Merkle Root Hash: " + header.getMerkleRootHash());
+            writer.newLine();
+            // Write other header fields
+            writer.write("END HEADER");
+            writer.newLine();
+            // Write Merkle tree information
+            for (MerkleNode node : merkleTree.getTree()) {
+                writer.write(node.toString()); // You may need to implement a toString method in MerkleNode
+                writer.newLine();
+            }
+
+            writer.write("END BLOCK");
+            writer.newLine();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void mineBlock(TargetSetter targetSetter) {
+        while (true) {
+            // Generate a random nonce within the target range
+            BigInteger nonce = targetSetter.getRandomNonce();
+            
+            // Concatenate nonce with Merkle root hash
+            byte[] dataToHash = concatenateNonceWithMerkleRootHash(nonce.toByteArray());
+            
+            // Calculate SHA-256 hash
+            byte[] hash = calculateSHA256Hash(dataToHash);
+            
+            // Convert hash to a BigInteger
+            BigInteger hashValue = new BigInteger(1, hash);
+            
+            // Check if the hash meets the target
+            if (hashValue.compareTo(targetSetter.getTargetThreshold()) <= 0) {
+                // If it does, set nonce in the header
+                header.setNonce(nonce.toByteArray());
+                break;
+            }
+        }
     }
 
     public void printBlock() {
