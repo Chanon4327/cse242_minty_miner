@@ -26,4 +26,42 @@ public class Blockchain {
             blocks.add(new Block(builder.build(), merkleTree));
         }
     }
+
+    public int balance(String address) {
+        // Iterate through blockchain - newest block to oldest
+        for (int i = blocks.size() - 1; i >= 0; i--) {
+            Block block = blocks.get(i);
+
+            // Check if the address exists in the block's Merkle tree
+            MerkleNode merkleNode = block.getMerkleTree().findNodeByAddress(address);
+
+            if (merkleNode != null) {
+                // Address exists --> Call the proofOfMembership method to get the proof
+                List<String> proof = merkleNode.proofOfMembership();
+
+                // Call to calculate balance based on proof
+                int balance = calculateBalance(merkleNode, proof);
+
+                // Return balance value
+                return balance;
+            }
+        }
+
+        // Address not found in any block
+        System.out.println("Address " + address + " not found in the blockchain.");
+        return -1;
+    }
+
+    public int calculateBalance(String address) {
+        // Iterate through the Merkle tree to find the MerkleNode with the given address
+        MerkleNode merkleNode = merkleTree.findNodeByAddress(address);
+        
+        if (merkleNode != null) {
+            // Address found --> Call getBalance from MerkleNode to return balance value
+            return merkleNode.getBalance();
+        }
+        
+        // Address not found --> return default balance (-1)
+        return -1;
+    }
 }
