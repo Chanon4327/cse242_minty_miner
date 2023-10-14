@@ -74,4 +74,34 @@ public class MerkleTree {
         return new MerkleTree(lines);
 
     }
+
+    /**
+     * Proof of membership
+     * @return array of hashes that starts with the hash of the given account structure
+     */
+    public ArrayList<String> proof(List<MerkleNode> structure) {
+
+        /* Will return this */
+        ArrayList<String> proofOfMembership = new ArrayList<>();
+
+        /* finding the Leaf node */
+        MerkleNode leafNode = null;
+        for (MerkleNode node : structure) {
+            if (node.isLeaf()) {
+                leafNode = node; // find the leaf node
+            }
+        }
+
+        /* Getting the hash of each node and storing it into an array until root is reach */
+        MerkleNode current = leafNode;
+        while (current != null) {
+            proofOfMembership.add(current.getHash());
+            current = current.getParent(); // traverse up each parent from the leaf until root is reached
+        }
+
+        // TODO: Then provide the header and hash of that block and the block hashes forward in time from that block to the most recent block
+        
+        return proofOfMembership;
+
+    }
 }

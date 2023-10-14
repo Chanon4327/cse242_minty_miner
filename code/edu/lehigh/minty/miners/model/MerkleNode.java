@@ -8,6 +8,7 @@ public class MerkleNode {
     private final String address;
     private final int balance;
     private final String hash;
+    private final MerkleNode parent;
 
     public boolean isLeaf() {
         return address != null && balance != -1;
@@ -17,12 +18,14 @@ public class MerkleNode {
         this.address = address;
         this.balance = balance;
         this.hash = hash;
+        this.parent = null;
     }
 
     public MerkleNode(String address, int balance) {
         this.address = address;
         this.balance = balance;
         this.hash = hashNode(address, balance);
+        this.parent = null;
     }
 
     public String getAddress() {
@@ -35,6 +38,10 @@ public class MerkleNode {
 
     public String getHash() {
         return hash;
+    }
+
+    public MerkleNode getParent() {
+        return parent;
     }
 
     public static String hashNode(String addr, int bal){
