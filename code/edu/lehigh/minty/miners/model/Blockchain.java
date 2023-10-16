@@ -77,7 +77,7 @@ public class Blockchain {
         blkTree.calculateMerkle(blkTree.getTree());                 // calculate merkle root from block ledger
         String trueMerkle = blkTree.getRootHash();                  // retrieve merkle root from tree
 
-        return blkMerkle == trueMerkle;
+        return blkMerkle.equals(trueMerkle);
     }
     
     /***
