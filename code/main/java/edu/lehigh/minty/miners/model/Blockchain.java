@@ -1,5 +1,6 @@
 package edu.lehigh.minty.miners.model;
 
+import java.lang.reflect.Array;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -16,6 +17,25 @@ public class Blockchain {
             Header.Builder builder = new Header.Builder();
 
             MerkleTree merkleTree = MerkleTree.readFile(blockFile);
+            builder.setMerkleRootHash(merkleTree.getRootHash())
+                    .setPreviousHeaderHash(i == 0 ? "0" : blocks.get(i - 1).getHeader().toHash());
+
+            // todo: bruteforce nonce here
+
+            builder.setTimestamp(Instant.now().getEpochSecond());
+
+            Block b = new Block(builder, merkleTree);
+
+            blocks.add(b);
+            b.setPreviousHeaderHash(blocks.get(blocks.size() - 1).getHeader().toHash());
+        }
+    }
+
+    public Blockchain(ArrayList<List<String>> lines) {
+        for (int i = 0; i < lines.size(); i++) {
+            Header.Builder builder = new Header.Builder();
+
+            MerkleTree merkleTree = new MerkleTree(lines.get(i));
             builder.setMerkleRootHash(merkleTree.getRootHash())
                     .setPreviousHeaderHash(i == 0 ? "0" : blocks.get(i - 1).getHeader().toHash());
 
@@ -103,7 +123,7 @@ public class Blockchain {
                 }
             } else {   // comparing previous hash to current.previous.hash
                 Block previous = blocks.get(i - 1);
-                if (previous.getHeader().toHash() != current.getPreviousHeaderHash()) {
+                if (!previous.getHeader().toHash().equals(current.getPreviousHeaderHash())) {
                     return false;
                 }
             }

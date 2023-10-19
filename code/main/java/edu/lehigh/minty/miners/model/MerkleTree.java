@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 public class MerkleTree {
     private final List<MerkleNode> tree;
 
-    private MerkleTree(ArrayList<String> lines) {
+    MerkleTree(List<String> lines) {
 
         List<MerkleNode> tempNodes = lines.stream().map(MerkleNode::fromString).filter(Objects::nonNull).collect(Collectors.toList());
 
