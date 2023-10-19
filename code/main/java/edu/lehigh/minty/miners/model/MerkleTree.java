@@ -1,19 +1,19 @@
 package edu.lehigh.minty.miners.model;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class MerkleTree {
     private final List<MerkleNode> tree;
 
     private MerkleTree(ArrayList<String> lines) {
 
-        List<MerkleNode> tempNodes = lines.stream().map(MerkleNode::fromString).filter(Objects::nonNull).toList();
+        List<MerkleNode> tempNodes = lines.stream().map(MerkleNode::fromString).filter(Objects::nonNull).collect(Collectors.toList());
 
 
         tree = calculateMerkle(tempNodes);
@@ -28,7 +28,7 @@ public class MerkleTree {
         return tree;
     }
 
-    private List<MerkleNode> calculateMerkle(List<MerkleNode> tmp) {
+    public List<MerkleNode> calculateMerkle(List<MerkleNode> tmp) {
         if (tmp.size() <= 1) {
             return tmp;
         }
@@ -103,5 +103,9 @@ public class MerkleTree {
         
         return proofOfMembership;
 
+    }
+
+    public MerkleNode findNodeByAddress(String address) {
+        return tree.stream().filter(node -> node.getAddress().equals(address)).findFirst().orElse(null);
     }
 }

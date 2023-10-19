@@ -1,5 +1,11 @@
 package edu.lehigh.minty.miners.model;
 
+import edu.lehigh.minty.miners.Main;
+
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Map;
 
@@ -8,8 +14,18 @@ public class Block {
 
     private final MerkleTree merkleTree; // full list of accounts
 
-    public Block(Header header, MerkleTree merkleTree) {
-        this.header = header;
+    private String previousHeaderHash;
+
+    public String getPreviousHeaderHash() {
+        return previousHeaderHash;
+    }
+
+    public void setPreviousHeaderHash(String previousHeaderHash) {
+        this.previousHeaderHash = previousHeaderHash;
+    }
+
+    public Block(Header.Builder header, MerkleTree merkleTree) {
+
         this.merkleTree = merkleTree;
 
         // Create a TargetSetter for target success rate
@@ -17,6 +33,8 @@ public class Block {
     
         // Get the target threshold for 50% success rate
         header.setTarget(targetSetter.getTargetThreshold().toByteArray());
+
+        this.header = header.build();
     
         // Continue with mining using target
         mineBlock(targetSetter);
@@ -24,7 +42,7 @@ public class Block {
         printBlock();
     }
 
-    private void saveBlockDataToFile(String inputFileName) {
+    public void saveBlockDataToFile(String inputFileName) {
         // Derive the output file name from the input file name
         String outputFileName = inputFileName.replace(".txt", ".block.out");
 
@@ -59,11 +77,8 @@ public class Block {
             // Generate a random nonce within the target range
             BigInteger nonce = targetSetter.getRandomNonce();
             
-            // Concatenate nonce with Merkle root hash
-            byte[] dataToHash = concatenateNonceWithMerkleRootHash(nonce.toByteArray());
-            
             // Calculate SHA-256 hash
-            byte[] hash = calculateSHA256Hash(dataToHash);
+            byte[] hash = Main.hash(merkleTree.getRootHash() + nonce).getBytes();
             
             // Convert hash to a BigInteger
             BigInteger hashValue = new BigInteger(1, hash);
@@ -101,4 +116,6 @@ public class Block {
     public MerkleTree getMerkleTree() {
         return merkleTree;
     }
+
+
 }

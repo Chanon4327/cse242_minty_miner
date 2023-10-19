@@ -7,7 +7,11 @@ public class Header {
     private final String merkleRootHash;
     private final long timestamp; // seconds since epoch
 
-    private final byte[] nonce; // bruteforce
+    public void setNonce(byte[] nonce) {
+        this.nonce = nonce;
+    }
+
+    private  byte[] nonce; // bruteforce
 
     private final byte[] target; // we choose (its a sha 256 hash) 50% probability with nonce
 

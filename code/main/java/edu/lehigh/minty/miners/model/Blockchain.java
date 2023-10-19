@@ -1,6 +1,7 @@
 package edu.lehigh.minty.miners.model;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -8,7 +9,7 @@ public class Blockchain {
     private final List<Block> blocks = new LinkedList<>();
 
     public Blockchain(List<String> blockFiles) {
-        for (int i=0; i<blockFiles.size(); i++) {
+        for (int i = 0; i < blockFiles.size(); i++) {
             String blockFile = blockFiles.get(i);
 
 
@@ -16,15 +17,21 @@ public class Blockchain {
 
             MerkleTree merkleTree = MerkleTree.readFile(blockFile);
             builder.setMerkleRootHash(merkleTree.getRootHash())
-                            .setPreviousHeaderHash(i == 0 ? "0": blocks.get(i-1).getHeader().toHash())
-                    .setTarget();
+                    .setPreviousHeaderHash(i == 0 ? "0" : blocks.get(i - 1).getHeader().toHash());
 
             // todo: bruteforce nonce here
 
             builder.setTimestamp(Instant.now().getEpochSecond());
 
-            blocks.add(new Block(builder.build(), merkleTree));
+            Block b = new Block(builder, merkleTree);
+
+            blocks.add(b);
+            b.setPreviousHeaderHash(blocks.get(blocks.size() - 1).getHeader().toHash());
         }
+    }
+
+    public List<Block> getBlocks() {
+        return blocks;
     }
 
     public int balance(String address) {
@@ -37,7 +44,11 @@ public class Blockchain {
 
             if (merkleNode != null) {
                 // Address exists --> Call the proofOfMembership method to get the proof
-                List<String> proof = merkleNode.proofOfMembership();
+
+                List<MerkleNode> singular = new ArrayList<>();
+                singular.add(merkleNode);
+
+                List<String> proof = block.getMerkleTree().proof(singular);
 
                 // Call to calculate balance based on proof
                 int balance = calculateBalance(merkleNode, proof);
@@ -52,15 +63,14 @@ public class Blockchain {
         return -1;
     }
 
-    public int calculateBalance(String address) {
+    public int calculateBalance(MerkleNode merkleNode, List<String> proof) {
         // Iterate through the Merkle tree to find the MerkleNode with the given address
-        MerkleNode merkleNode = merkleTree.findNodeByAddress(address);
-        
+
         if (merkleNode != null) {
             // Address found --> Call getBalance from MerkleNode to return balance value
             return merkleNode.getBalance();
         }
-        
+
         // Address not found --> return default balance (-1)
         return -1;
     }
@@ -79,26 +89,25 @@ public class Blockchain {
 
         return blkMerkle.equals(trueMerkle);
     }
-    
+
     /***
      * Validating the entire block chain.
      * @return true if entire blockchain is valid, false otherwise
      */
     public boolean validateBlockChain() {
-        for(int i = 0; i<blocks.size(); i++) {
+        for (int i = 0; i < blocks.size(); i++) {
             Block current = blocks.get(i);
-            if(i == 0){     // root node
-                if(current.getHeader().toHash() != merkleTree.getMerkleRootHash()){
+            if (i == 0) {     // root node
+                if (!current.getHeader().toHash().equals(current.getMerkleTree().getRootHash())) {
+                    return false;
+                }
+            } else {   // comparing previous hash to current.previous.hash
+                Block previous = blocks.get(i - 1);
+                if (previous.getHeader().toHash() != current.getPreviousHeaderHash()) {
                     return false;
                 }
             }
-            else{   // comparing previous hash to current.previous.hash
-                Block previous = blocks.get(i-1);
-                if(previous.getHeader().toHash() != current.getPreviousHeaderHash()){       
-                    return false;
-                }
-            }
-            if(validateBlock(current) == false) {
+            if (!validateBlock(current)) {
                 return false;
             }
         }

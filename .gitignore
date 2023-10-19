@@ -1,6 +1,6 @@
 target/
 !.mvn/wrapper/maven-wrapper.jar
-!code/edu/lehigh/minty/miners/**/target/
+!code/main/java/edu/lehigh/minty/miners/**/target/
 !code/src/test/**/target/
 
 ### IntelliJ IDEA ###
@@ -28,7 +28,7 @@ target/
 /nbdist/
 /.nb-gradle/
 build/
-!code/edu/lehigh/minty/miners/**/build/
+!code/main/java/edu/lehigh/minty/miners/**/build/
 !code/src/test/**/build/
 
 ### VS Code ###

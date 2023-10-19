@@ -1,3 +1,5 @@
+package edu.lehigh.minty.miners.model;
+
 import java.math.BigInteger;
 import java.util.Random;
 
